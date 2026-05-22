@@ -20,3 +20,10 @@ def get_current_user(
     if not user or not user.is_active:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "유효하지 않은 사용자")
     return user
+
+def get_current_admin(
+    current: User = Depends(get_current_user),
+) -> User:
+    if not current.is_admin:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "관리자 권한이 필요합니다")
+    return current
