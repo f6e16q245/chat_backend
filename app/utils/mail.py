@@ -42,3 +42,29 @@ async def send_verification_code(to_email: str, code: str) -> None:
         subtype=MessageType.html,
     )
     await _mail.send_message(message)
+
+    async def send_password_reset_code(to_email: str, code: str) -> None:
+     html = f"""
+    <div style="font-family: sans-serif; max-width: 480px; margin: auto; padding: 24px; text-align: center;">
+      <h2 style="color: #333;">비밀번호 재설정 코드</h2>
+      <p>비밀번호 재설정을 요청하셨습니다.</p>
+      <p>아래 6자리 코드를 입력해주세요.</p>
+      <div style="font-size: 36px; font-weight: bold; letter-spacing: 8px;
+                  color: #DC2626; margin: 32px 0; padding: 16px;
+                  background: #FEF2F2; border-radius: 8px;">
+        {code}
+      </div>
+      <p style="font-size: 12px; color: #777;">
+        이 코드는 {settings.EMAIL_CODE_EXPIRE_MINUTES}분 동안 유효합니다.<br>
+        본인이 요청하지 않았다면 즉시 비밀번호를 변경해주세요.
+      </p>
+    </div>
+    """
+
+    message = MessageSchema(
+        subject="[익명 매칭] 비밀번호 재설정 코드",
+        recipients=[to_email],
+        body=html,
+        subtype=MessageType.html,
+    )
+    await _mail.send_message(message)

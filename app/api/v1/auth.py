@@ -90,3 +90,39 @@ def login(data: UserLogin, db: Session = Depends(get_db)):
             )
 
     return Token(access_token=create_access_token(user.id))
+
+from app.schemas.user import PasswordResetRequest, PasswordResetConfirm
+from app.utils.mail import send_password_reset_code
+from app.crud import verification as crud_verify
+from app.crud.user import change_password
+
+
+@router.post("/password-reset/request")
+async def password_reset_request(
+    data: PasswordResetRequest,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+):
+    """비밀번호 재설정 코드 발송."""
+    user = crud_user.get_by_email(db, data.email)
+    # 보안상, 사용자 존재 여부를 알려주지 않음 (이메일 추측 공격 방지)
+    if user:
+        code = crud_verify.issue_code(db, user.id)
+        background_tasks.add_task(send_password_reset_code, user.email, code)
+
+    return {"message": "해당 이메일이 가입돼 있다면 재설정 코드를 발송했습니다"}
+
+
+@router.post("/password-reset/confirm")
+def password_reset_confirm(data: PasswordResetConfirm, db: Session = Depends(get_db)):
+    """코드 검증 후 새 비밀번호 적용."""
+    user = crud_user.get_by_email(db, data.email)
+    if not user:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "유효하지 않은 요청입니다")
+
+    ok, msg = crud_verify.verify_code(db, user.id, data.code)
+    if not ok:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, msg)
+
+    change_password(db, user, data.new_password)
+    return {"message": "비밀번호가 재설정되었습니다. 새 비밀번호로 로그인해주세요."}

@@ -57,3 +57,19 @@ def count_reports_against(
 ):
     """특정 사용자가 받은 신고 총수 (제재 결정 참고용)"""
     return {"user_id": user_id, "total_reports": crud_report.count_reports_against(db, user_id)}
+
+@router.delete("/users/{user_id}", status_code=204)
+def admin_delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    """관리자가 사용자 계정 강제 삭제 (악성 사용자 등)"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "사용자를 찾을 수 없습니다")
+    if user.id == admin.id:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "관리자 본인 계정은 삭제할 수 없습니다")
+
+    db.delete(user)
+    db.commit()

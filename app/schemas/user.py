@@ -40,3 +40,21 @@ class EmailVerifyRequest(BaseModel):
 
 class ResendCodeRequest(BaseModel):
     email: EmailStr
+
+class PasswordChange(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=72)
+
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+
+class PasswordResetConfirm(BaseModel):
+    email: EmailStr
+    code: str = Field(min_length=6, max_length=6)
+    new_password: str = Field(min_length=8, max_length=72)
+
+
+class AccountDelete(BaseModel):
+    password: str  # 본인 확인용

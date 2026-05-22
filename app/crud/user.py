@@ -27,3 +27,14 @@ def create_user(db: Session, data: UserCreate) -> User:
     db.commit()
     db.refresh(user)
     return user
+
+def change_password(db: Session, user: User, new_password: str) -> User:
+    user.hashed_password = hash_password(new_password)
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+def delete_user(db: Session, user: User) -> None:
+    db.delete(user)
+    db.commit()
