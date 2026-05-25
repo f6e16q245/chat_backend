@@ -43,8 +43,9 @@ async def send_verification_code(to_email: str, code: str) -> None:
     )
     await _mail.send_message(message)
 
-    async def send_password_reset_code(to_email: str, code: str) -> None:
-     html = f"""
+
+async def send_password_reset_code(to_email: str, code: str) -> None:
+    html = f"""
     <div style="font-family: sans-serif; max-width: 480px; margin: auto; padding: 24px; text-align: center;">
       <h2 style="color: #333;">비밀번호 재설정 코드</h2>
       <p>비밀번호 재설정을 요청하셨습니다.</p>

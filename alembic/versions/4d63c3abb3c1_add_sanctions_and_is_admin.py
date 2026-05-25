@@ -37,7 +37,9 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_sanctions_id'), 'sanctions', ['id'], unique=False)
     op.create_index(op.f('ix_sanctions_user_id'), 'sanctions', ['user_id'], unique=False)
-    op.add_column('users', sa.Column('is_admin', sa.Boolean(), nullable=False))
+    op.add_column('users', sa.Column('is_admin', sa.Boolean(), nullable=True))
+    op.execute("UPDATE users SET is_admin = false WHERE is_admin IS NULL")
+    op.alter_column('users', 'is_admin', nullable=False, server_default=sa.text('false'))
     # ### end Alembic commands ###
 
 
