@@ -21,12 +21,14 @@ async def signup(
 ):
     if crud_user.get_by_email(db, data.email):
         raise HTTPException(status.HTTP_409_CONFLICT, "이미 가입된 이메일")
+    
+        # 인증 코드 발급 + 메일 발송 (메일은 백그라운드로)
+    # code = crud_verify.issue_code(db, user.id)
+    # background_tasks.add_task(send_verification_code, user.email, code)
 
     user = crud_user.create_user(db, data)
-
-    # 인증 코드 발급 + 메일 발송 (메일은 백그라운드로)
-    code = crud_verify.issue_code(db, user.id)
-    background_tasks.add_task(send_verification_code, user.email, code)
+    # 발표 시연용: 이메일 인증 단계 자동 통과 (is_verified=True)
+    # 클라우드 환경(Render Free)의 SMTP 차단으로 메일 발송 생략
 
     return user
 

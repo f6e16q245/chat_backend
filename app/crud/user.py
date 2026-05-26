@@ -22,6 +22,7 @@ def create_user(db: Session, data: UserCreate) -> User:
         email=data.email,
         hashed_password=hash_password(data.password),
         nickname=_unique_nickname(db),
+        is_verified=True,   # 발표 시연용: 메일 인증 자동 통과
     )
     db.add(user)
     db.commit()
