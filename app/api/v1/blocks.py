@@ -44,4 +44,18 @@ def list_my_blocks(
     db: Session = Depends(get_db),
     current: User = Depends(get_current_user),
 ):
-    return crud_block.list_my_blocks(db, current.id)
+    blocks = crud_block.list_my_blocks(db, current.id)
+    result = []
+    for block in blocks:
+        result.append({
+            "id": block.id,
+            "blocker_id": block.blocker_id,
+            "blocked_id": block.blocked_id,
+            "created_at": block.created_at,
+            "blocked_user": {
+                "id": block.blocked.id,
+                "nickname": block.blocked.nickname,
+                "avatar": block.blocked.avatar or "🐱",
+            },
+        })
+    return result

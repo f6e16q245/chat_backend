@@ -10,6 +10,7 @@ class BlockOut(BaseModel):
     id: int
     blocker_id: int
     blocked_id: int
+    blocked_user: BlockedUser
     created_at: datetime
 
     class Config:
