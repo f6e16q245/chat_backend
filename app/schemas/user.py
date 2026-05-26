@@ -17,6 +17,7 @@ class UserOut(BaseModel):
     email: EmailStr
     nickname: str
     bio: str
+    avatar: str 
     is_verified: bool
     created_at: datetime
 
@@ -27,6 +28,7 @@ class UserOut(BaseModel):
 class ProfileUpdate(BaseModel):
     nickname: str | None = Field(default=None, min_length=2, max_length=50)
     bio: str | None = Field(default=None, max_length=500)
+    avatar: str | None = Field(default=None, max_length=10)
 
 
 class Token(BaseModel):

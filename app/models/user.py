@@ -11,6 +11,7 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     nickname = Column(String(50), unique=True, nullable=False, index=True)
     bio = Column(String(500), default="")
+    avatar = Column(String(10), default="🐱")
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False, nullable=False)

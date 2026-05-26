@@ -32,6 +32,8 @@ def update_me(
         current.nickname = data.nickname
     if data.bio is not None:
         current.bio = data.bio
+    if data.avatar is not None:            # ⭐ 추가
+        current.avatar = data.avatar 
     db.commit()
     db.refresh(current)
     return current
@@ -63,3 +65,16 @@ def delete_my_account(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "비밀번호가 일치하지 않습니다")
 
     crud_user.delete_user(db, current)
+
+
+@router.get("/by-nickname/{nickname}", response_model=UserOut)
+def get_user_by_nickname(
+    nickname: str,
+    db: Session = Depends(get_db),
+    current: User = Depends(get_current_user),
+):
+    """닉네임으로 사용자 조회 (신고/차단 시 user_id 받기 위함)"""
+    user = db.query(User).filter(User.nickname == nickname).first()
+    if not user:
+        raise HTTPException(404, "사용자를 찾을 수 없습니다")
+    return user
