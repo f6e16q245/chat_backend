@@ -39,7 +39,7 @@ def unblock_user(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "차단 기록이 없습니다")
 
 
-@router.get("/me", response_model=list[BlockOut])
+@router.get("/me")
 def list_my_blocks(
     db: Session = Depends(get_db),
     current: User = Depends(get_current_user),
@@ -51,7 +51,7 @@ def list_my_blocks(
             "id": block.id,
             "blocker_id": block.blocker_id,
             "blocked_id": block.blocked_id,
-            "created_at": block.created_at,
+            "created_at": block.created_at.isoformat() if block.created_at else None,
             "blocked_user": {
                 "id": block.blocked.id,
                 "nickname": block.blocked.nickname,
